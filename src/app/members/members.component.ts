@@ -14,11 +14,16 @@ export class MembersComponent implements OnInit {
     id: 1,
     name: '田中太郎'
   };
+  selectedMember?: Member; // オプショナルプロパティとして定義
 
   constructor() {}
 
   ngOnInit(): void {
 
+  }
+
+  onSelect(member: Member): void {
+    this.selectedMember = member;
   }
 
 }
