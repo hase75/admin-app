@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MEMBERS } from './mock-members';
+import { Observable, of } from 'rxjs'; //非同期処理
 import { Member } from './member';
 
 @Injectable({
@@ -9,7 +10,7 @@ export class MemberService {
 
   constructor() { }
 
-  getMembers(): Member[] {
-    return MEMBERS;
+  getMembers(): Observable<Member[]> {
+    return of(MEMBERS); //ofでMEMBERSの値をObservableに変換している
   }
 }
