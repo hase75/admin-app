@@ -1,5 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Member } from '../member';
+import { ActivatedRoute } from '@angular/router';
+import { MemberService } from '../member.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-member-detail',
@@ -9,7 +12,23 @@ import { Member } from '../member';
 export class MemberDetailComponent implements OnInit {
   @Input() member?: Member;
 
-  constructor() {}
+  constructor(
+    private route: ActivatedRoute, //URLのパラメータやハッシュフラグメントを取得するためのサービス
+    private memberService: MemberService,
+    private location: Location //ブラウザバックやページを進むなどブラウザの機能をangularを通して使うためのサービス
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getMember();
+  }
+
+  getMember(): void {
+    const id = +(this.route.snapshot.paramMap.get('id') ?? ''); //現在のルートのURLパラメータから 'id' の値を取得しようとしている
+    this.memberService.getMember(id)
+      .subscribe(member => this.member = member);
+  }
+
+  goBack(): void {
+    this.location.back();
+  }
 }

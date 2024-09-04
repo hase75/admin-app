@@ -12,7 +12,12 @@ export class MemberService {
   constructor(private messageService: MessageService) { }
 
   getMembers(): Observable<Member[]> {
-    this.messageService.add('MemberService: 社員一覧データを取得しました')
+    this.messageService.add(`MemberService: 社員一覧データを取得しました`)
     return of(MEMBERS); //ofでMEMBERSの値をObservableに変換している
+  }
+
+  getMember(id: number): Observable<Member> {
+    this.messageService.add(`MemberService: 社員データ(id=${id})を取得しました`);
+    return of(MEMBERS.find(member => member.id === id)!); //配列の中でidがマッチするものを1つだけ取得
   }
 }
