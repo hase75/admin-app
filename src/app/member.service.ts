@@ -6,44 +6,51 @@ import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map, tap } from 'rxjs/operators';
 
-
 @Injectable({
-  providedIn: 'root' //アプリケーションのどこからでも使用できる
+  providedIn: 'root', //アプリケーションのどこからでも使用できる
 })
 export class MemberService {
   private membersUrl = 'api/members';
   httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json'})
-  }
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  };
 
   constructor(
     private http: HttpClient,
     private messageService: MessageService
-  ) { }
+  ) {}
 
   getMembers(): Observable<Member[]> {
-    return this.http.get<Member[]>(this.membersUrl)
-      .pipe(
-        tap(members => this.log('社員データを取得しました')),
-        catchError(this.handleError<Member[]>('getMembers', []))
-      );
+    return this.http.get<Member[]>(this.membersUrl).pipe(
+      tap((members) => this.log('社員データを取得しました')),
+      catchError(this.handleError<Member[]>('getMembers', []))
+    );
   }
 
   getMember(id: number): Observable<Member> {
     const url = `${this.membersUrl}/${id}`;
-    return this.http.get<Member>(url)
-      .pipe(
-        tap(_ => this.log(`社員データ(id=${id})を取得しました`)),
-        catchError(this.handleError<Member>(`getMember id=${id}`))
-      )
+    return this.http.get<Member>(url).pipe(
+      tap((_) => this.log(`社員データ(id=${id})を取得しました`)),
+      catchError(this.handleError<Member>(`getMember id=${id}`))
+    );
   }
 
   updateMember(member: Member): Observable<any> {
-    return this.http.put(this.membersUrl, member, this.httpOptions)
+    return this.http.put(this.membersUrl, member, this.httpOptions).pipe(
+      tap((_) => this.log(`社員データ(id=${member.id})を変更しました`)),
+      catchError(this.handleError<any>(`updateMember`))
+    );
+  }
+
+  addMember(member: Member): Observable<Member> {
+    return this.http
+      .post<Member>(this.membersUrl, member, this.httpOptions)
       .pipe(
-        tap(_ => this.log(`社員データ(id=${member.id})を変更しました`)),
-        catchError(this.handleError<any>(`updateMember`))
-      )
+        tap((newMember: Member) =>
+          this.log(`社員データ(id=${newMember.id})を追加しました`)
+        ),
+        catchError(this.handleError<Member>(`addMember`))
+      );
   }
 
   private log(message: string) {
@@ -51,12 +58,12 @@ export class MemberService {
   }
 
   private handleError<T>(operation = 'operation', result?: T) {
-    return(error: any): Observable<T> => {
+    return (error: any): Observable<T> => {
       console.error(error);
 
       this.log(`${operation} 失敗: ${error.message}`);
 
       return of(result as T);
-    }
+    };
   }
 }

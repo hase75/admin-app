@@ -24,4 +24,13 @@ export class MembersComponent implements OnInit {
       .getMembers()
       .subscribe((members) => (this.members = members)); //Observableから発行されたデータをコンポーネントのmembersプロパティに割り当てている
   }
+
+  add(name: string): void {
+    name = name.trim();
+    if(!name) {return; }
+    this.memberService.addMember({ name } as Member)
+      .subscribe(member => {
+        this.members!.push(member);
+      });
+  }
 }
